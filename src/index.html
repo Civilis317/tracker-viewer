@@ -6,26 +6,14 @@
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
-      
-    <script src="env.js"></</script>
-
-    <script>
-	    function initGoogleApi() {
-	        var script = document.createElement('script');
-	        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + env.apikey;
-	        script.async = true;
-	        script.defer = true;
-	        document.getElementsByTagName('head')[0].appendChild(script);
-	        return false;
-	    }
-    </script>
-  
+  <link rel="icon" type="image/x-icon" href="favicon.ico">  
   
   
 </head>
-<body onload="initGoogleApi();">
-  <app-root></app-root>
+<body>
+  <app-root>Loading...</app-root>
+  
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3lWzTZwxkmPm04KRSmOPa87IlLB6DxCw" async defer></script>
+  
 </body>
 </html>
