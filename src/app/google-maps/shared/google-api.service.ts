@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import { environment } from '../../../environments/environment';
 
-// const API_KEY = 'AIzaSyC3lWzTZwxkmPm04KRSmOPa87IlLB6DxCw';
-const API_KEY = environment.apikey;
-const url = 'https://maps.googleapis.com/maps/api/js?key=' + API_KEY + '&callback=initMap';
+const url = `https://maps.googleapis.com/maps/api/js?key=${environment.apikey}&callback=initMap`;
 
 @Injectable()
 export class GoogleApiService {
