@@ -8,6 +8,8 @@ import {AppRoutingModule} from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GoogleMapsComponent } from './google-maps/google-maps.component';
 import { GoogleApiService } from './google-maps/shared/google-api.service';
+import { LocationService } from './services/location.service';
+import { IdentityService } from './services/identity.service';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,7 @@ import { GoogleApiService } from './google-maps/shared/google-api.service';
     AppRoutingModule,
     HttpModule
   ],
-  providers: [GoogleApiService],
+  providers: [GoogleApiService, LocationService, IdentityService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

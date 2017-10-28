@@ -3,6 +3,9 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, ParamMap} from '@angular/router';
 
 import {MapConfiguration} from '../model/map-config.model';
+import {Identity} from '../model/identity.model';
+import { LocationService } from '../services/location.service';
+import { IdentityService } from '../services/identity.service';
 
 
 declare var google: any;
@@ -14,17 +17,58 @@ declare var google: any;
 })
 export class GoogleMapsComponent implements OnInit {
   map: any;
-  id: number;
+  identity: Identity;
   mapConfig: MapConfiguration;
 
-  constructor(private googleApi: GoogleApiService, private route: ActivatedRoute) {}
+  constructor(
+    private googleApi: GoogleApiService, 
+    private route: ActivatedRoute, 
+    private locationService: LocationService, 
+    private identityService: IdentityService
+  ) {}
 
   ngOnInit() {
 
     this.route.params.subscribe((param: any) => {
-      this.id = parseInt(param.id);
+      this.identity = this.identityService.getIdentity(param.id);
+      
+      this.locationService.list().then((data: any) => {
+        // filter out phoneid
+        const localList = data.filter(i => i.phoneid == this.identity.phoneid);
+        // get last location posted
+        const location = localList[localList.length - 5];
+        console.log(location);
+        
+        this.googleApi.initMap().then(() => {
+          this.mapConfig = {
+            "id": this.identity.id,
+            "title": this.identity.name,
+            "lat": location.lat,
+            "lng": location.long,
+            "zoom": 14,
+            "type": google.maps.MapTypeId.TERRAIN
+          };
+    
+          const mapProp = {
+            center: new google.maps.LatLng(this.mapConfig.lat, this.mapConfig.lng),
+            zoom: this.mapConfig.zoom,
+            mapTypeId: this.mapConfig.type
+          };
+    
+          this.map = new google.maps.Map(document.getElementById('map'), mapProp);
+          
+          const marker = new google.maps.Marker({
+            position: new google.maps.LatLng(this.mapConfig.lat, this.mapConfig.lng),
+            map: this.map,
+            title: this.identity.name + ', ' + location.date
+          });
+          
+        });
+        
+      });
     });
 
+    /*
     this.googleApi.initMap().then(() => {
       this.mapConfig = {
         "id": 1,
@@ -40,12 +84,10 @@ export class GoogleMapsComponent implements OnInit {
         zoom: this.mapConfig.zoom,
         mapTypeId: this.mapConfig.type
       };
-      
-      console.log('mapProp: ' + JSON.stringify(mapProp));
 
       this.map = new google.maps.Map(document.getElementById('map'), mapProp);
     });
-    
+    */
   }
 
 }
