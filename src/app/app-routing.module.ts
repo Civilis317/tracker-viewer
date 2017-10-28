@@ -5,10 +5,10 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 
 import {AppComponent} from './app.component';
-import { MapComponent } from './map/map.component';
+import { GoogleMapsComponent } from './google-maps/google-maps.component';
 
 const routes: Routes = [
-  {path: 'map/:id', component: MapComponent}
+  {path: 'map/:id', component: GoogleMapsComponent}
 ];
 
 @NgModule({

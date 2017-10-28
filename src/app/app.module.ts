@@ -1,22 +1,25 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import {HttpModule} from '@angular/http';
 
 import {environment} from '../environments/environment';
 import {AppRoutingModule} from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { MapComponent } from './map/map.component';
+import { GoogleMapsComponent } from './google-maps/google-maps.component';
+import { GoogleApiService } from './google-maps/shared/google-api.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    MapComponent
+    GoogleMapsComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpModule
   ],
-  providers: [],
+  providers: [GoogleApiService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
