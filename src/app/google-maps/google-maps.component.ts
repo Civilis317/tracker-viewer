@@ -4,8 +4,8 @@ import {ActivatedRoute, ParamMap} from '@angular/router';
 
 import {MapConfiguration} from '../model/map-config.model';
 import {Identity} from '../model/identity.model';
-import { LocationService } from '../services/location.service';
-import { IdentityService } from '../services/identity.service';
+import {LocationService} from '../services/location.service';
+import {IdentityService} from '../services/identity.service';
 
 
 declare var google: any;
@@ -18,76 +18,81 @@ declare var google: any;
 export class GoogleMapsComponent implements OnInit {
   map: any;
   identity: Identity;
-  mapConfig: MapConfiguration;
+  locationList: any;
+  pointer: number;
 
   constructor(
-    private googleApi: GoogleApiService, 
-    private route: ActivatedRoute, 
-    private locationService: LocationService, 
+    private googleApi: GoogleApiService,
+    private route: ActivatedRoute,
+    private locationService: LocationService,
     private identityService: IdentityService
   ) {}
 
   ngOnInit() {
-
     this.route.params.subscribe((param: any) => {
       this.identity = this.identityService.getIdentity(param.id);
-      
-      this.locationService.list().then((data: any) => {
-        // filter out phoneid
-        const localList = data.filter(i => i.phoneid == this.identity.phoneid);
-        // get last location posted
-        const location = localList[localList.length - 5];
-        console.log(location);
-        
-        this.googleApi.initMap().then(() => {
-          this.mapConfig = {
-            "id": this.identity.id,
-            "title": this.identity.name,
-            "lat": location.lat,
-            "lng": location.long,
-            "zoom": 14,
-            "type": google.maps.MapTypeId.TERRAIN
-          };
-    
-          const mapProp = {
-            center: new google.maps.LatLng(this.mapConfig.lat, this.mapConfig.lng),
-            zoom: this.mapConfig.zoom,
-            mapTypeId: this.mapConfig.type
-          };
-    
-          this.map = new google.maps.Map(document.getElementById('map'), mapProp);
-          
-          const marker = new google.maps.Marker({
-            position: new google.maps.LatLng(this.mapConfig.lat, this.mapConfig.lng),
-            map: this.map,
-            title: this.identity.name + ', ' + location.date
-          });
-          
-        });
-        
-      });
+      this.refreshLocationList();
     });
+  }
 
-    /*
+  public refreshLocationList() {
+    this.pointer = 1;
+    this.locationService.list().then((data: any) => {
+      // filter out phoneid
+      this.locationList = data.filter(i => i.phoneid == this.identity.phoneid);
+      this.renderMap();
+    });
+  }
+
+  public previousLocation() {
+    this.pointer++;
+    if (this.pointer > this.locationList.length - 1 ) {
+      this.pointer = this.locationList.length - 1;
+    }
+    this.renderMap();
+  }
+
+  public nextLocation() {
+    this.pointer--;
+    if (this.pointer < 0) {
+      this.pointer = 0;
+    }
+    this.renderMap();
+  }
+  
+  private renderMap() {
+    // get last location posted
+    const location = this.locationList[this.locationList.length - this.pointer];
+
     this.googleApi.initMap().then(() => {
-      this.mapConfig = {
-        "id": 1,
-        "title": "Cruquiusbrug",
-        "lat": 52.338414,
-        "lng": 4.636684,
-        "zoom": 10,
-        "type": google.maps.MapTypeId.TERRAIN
-      };
+      const mapConfig: MapConfiguration = this.getMapConfig(location);
 
       const mapProp = {
-        center: new google.maps.LatLng(this.mapConfig.lat, this.mapConfig.lng),
-        zoom: this.mapConfig.zoom,
-        mapTypeId: this.mapConfig.type
+        center: new google.maps.LatLng(mapConfig.lat, mapConfig.lng),
+        zoom: mapConfig.zoom,
+        mapTypeId: mapConfig.type
       };
 
       this.map = new google.maps.Map(document.getElementById('map'), mapProp);
+
+      const marker = new google.maps.Marker({
+        position: new google.maps.LatLng(mapConfig.lat, mapConfig.lng),
+        map: this.map,
+        title: this.identity.name + ', ' + location.date
+      });
+
     });
-    */
   }
 
+  private getMapConfig(location: any): MapConfiguration {
+    const mapConfig: MapConfiguration = {
+      "id": this.identity.id,
+      "title": this.identity.name,
+      "lat": location.lat,
+      "lng": location.long,
+      "zoom": 14,
+      "type": google.maps.MapTypeId.TERRAIN
+    };
+    return mapConfig;
+  }
 }

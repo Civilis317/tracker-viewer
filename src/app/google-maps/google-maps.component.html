@@ -5,7 +5,15 @@
 	</div>
 
 	<div class="portalDiv">
-		<p>{{identity.name}}</p>
+	
+		<p>
+		{{identity.name}}
+		<button type="button" title="previous location" (click)="previousLocation()" class="btn btn btn-xs"><span class="glyphicon glyphicon-step-backward"></span></button>
+		<button type="button" title="next location" (click)="nextLocation()" class="btn btn btn-xs"><span class="glyphicon glyphicon-step-forward"></span></button>
+		<button type="button" title="latest location" (click)="refreshLocationList()" class="btn btn btn-xs"><span class="glyphicon glyphicon-refresh"></span></button>
+		
+		</p>
+		
 		<div id="map"></div>
 	</div>
 	
