@@ -20,6 +20,9 @@ export class GoogleMapsComponent implements OnInit {
   identity: Identity;
   locationList: any;
   pointer: number;
+  datetime: Date;
+  provider: string;
+  
 
   constructor(
     private googleApi: GoogleApiService,
@@ -40,6 +43,7 @@ export class GoogleMapsComponent implements OnInit {
     this.locationService.list().then((data: any) => {
       // filter out phoneid
       this.locationList = data.filter(i => i.phoneid == this.identity.phoneid);
+      console.log(this.locationList);
       this.renderMap();
     });
   }
@@ -85,6 +89,8 @@ export class GoogleMapsComponent implements OnInit {
   }
 
   private getMapConfig(location: any): MapConfiguration {
+    this.provider = location.provider;
+    this.datetime = location.date;
     const mapConfig: MapConfiguration = {
       "id": this.identity.id,
       "title": this.identity.name,
