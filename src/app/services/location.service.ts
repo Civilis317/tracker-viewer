@@ -14,7 +14,7 @@ export class LocationService {
   list(): Promise<Location[]> {
     const url: string = `${environment.tracker_url}/${environment.tracker_list_endpoint}`;
     
-    return this.http.get(url)
+    return this.http.get(url, {withCredentials: true})
       .toPromise()
       .then(response => response.json())
       .catch(this.handleError);

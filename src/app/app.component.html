@@ -20,7 +20,16 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li *ngIf="!authenticated"><a routerLink="/login" title="Create a new session"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-      <li *ngIf="authenticated"><span class="glyphicon glyphicon-user"></span> {{user.displayname}}</li>
+	  <li *ngIf="authenticated" class="dropdown">
+		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> {{user.displayname}}
+	       <span class="caret"></span></a>
+	       <ul class="dropdown-menu">
+			<li> 
+				<a routerLink="/" (click)="logout()" title="End your session"><span class="glyphicon glyphicon-log-out"></span> Log off</a>
+			</li>
+	       </ul>
+	  </li>      
+      
     </ul>
   </div>
 </nav> 

@@ -2,7 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {environment} from '../environments/environment';
 import {Authentication} from './model/authentication';
 import {User} from './model/user.model';
+import { AuthenticationService } from './services/authentication.service';
 import {PubSubService} from './services/pubsub.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -11,18 +13,28 @@ import {PubSubService} from './services/pubsub.service';
 })
 
 export class AppComponent implements OnInit {
-  title = 'Tracker Viewer';
-  menu = this.assembleMenu();
-  private authenticated: boolean = false;
+  private title = 'Tracker Viewer';
+  private menu: any;
+  private authenticated: boolean;
   private user: User;
 
-  constructor(private pubSubService: PubSubService) {}
+  constructor(
+    private router: Router,
+    private pubSubService: PubSubService, 
+    private authenticationService: AuthenticationService
+  ) {}
 
   ngOnInit(): void {
+    this.checkAuthentication();
+
+    console.log("onInit " + this.authenticated + " " + this.user);
+
+
     this.pubSubService.Authentication.subscribe(
       (authentication: Authentication) => {
         this.authenticated = authentication.authenticated;
         this.user = authentication.user;
+        localStorage.setItem(environment.AUTHENTICATION, JSON.stringify(authentication));
         this.assembleMenu();
       },
       (err) => console.error('error in AuthPubSubService'),
@@ -31,20 +43,53 @@ export class AppComponent implements OnInit {
 
   }
 
-  assembleMenu() {
+  private assembleMenu(): void {
     let menuString: string = '{"menuItemList": [';
     if (this.user && this.authenticated) {
       this.user.identities.forEach(element => {
         const menuItem: string = '{"url": "/map/' + element.id + '", "name": "' + element.name + '"},';
         menuString += menuItem;
-        // remove last ',' to be able to call JSON.parse on the resultant string
-        menuString = menuString.substring(0, menuString.length - 1);
       });
+      // remove last ',' to be able to call JSON.parse on the resultant string
+      menuString = menuString.substring(0, menuString.length - 1);
+      menuString += '], "displayName": "kkk"}';
+
     } else {
-      menuString += '], "displayName": "Not logged in", "authenticated": false}';
-      
+      menuString += '], "displayName": "Not logged in"}';
     }
 
-    return JSON.parse(menuString);
+    this.menu = JSON.parse(menuString);
   }
+
+  private checkAuthentication(): void {
+    const auth_string = localStorage.getItem(environment.AUTHENTICATION);
+    if (auth_string) {
+      const authentication: Authentication = JSON.parse(auth_string);
+      this.authenticated = authentication.authenticated;
+      this.user = authentication.user;
+    } else {
+      this.authenticated = false;
+      this.user = null;
+    }
+    this.assembleMenu();
+  }
+  
+  logout(): void {
+    console.log('logging off');
+    this.authenticationService.logout()
+      .then((authentication: Authentication) => {
+        // user object minus pwd is returned, put on pub-sub svc for app.component to process
+        if (!authentication.authenticated) {
+          localStorage.removeItem(environment.AUTHENTICATION);
+          this.checkAuthentication();
+        }
+        this.router.navigate(['/']);
+      }).catch ( error => {
+        // do something...
+        // logout anyway? but the jwt cookie will still be there...
+        localStorage.removeItem(environment.AUTHENTICATION);
+        this.checkAuthentication();
+      });
+  }
+
 }
