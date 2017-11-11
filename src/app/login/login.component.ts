@@ -28,6 +28,7 @@ export class LoginComponent implements OnInit {
     this.alert.message = "";
     this.authenticationService.login(this.username, this.password)
       .then((authentication: Authentication) => {
+        console.log('authentication: ' + authentication);
         // user object minus pwd is returned, put on pub-sub svc for app.component to process
         if (!authentication.authenticated) {
           this.alert.error = "Login failure";
