@@ -1,3 +1,5 @@
+
+<div style="width: 80%; margin-left: 5%;">
 <h3>{{title}}</h3>
 
  <nav class="navbar navbar-default">
@@ -11,16 +13,18 @@
 	        <span class="caret"></span></a>
 	        <ul class="dropdown-menu">
 				<li *ngFor="let menuItem of menu.menuItemList; let i = index">
-					<a href="{{menuItem.url}}">{{menuItem.name}}</a>
+					<a routerLink="{{menuItem.url}}">{{menuItem.name}}</a>
 				</li>
 	        </ul>
 		</li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
-      <li ng-show="menu.authenticated"><a href="#/"><span class="glyphicon glyphicon-user"></span> {{menu.displayName}}</a></li>
-      <li ng-hide="menu.authenticated"><a href="#/login?/menu"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li *ngIf="!authenticated"><a routerLink="/login" title="Create a new session"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      <li *ngIf="authenticated"><span class="glyphicon glyphicon-user"></span> {{user.displayname}}</li>
     </ul>
   </div>
 </nav> 
 
 <router-outlet></router-outlet>
+
+</div>

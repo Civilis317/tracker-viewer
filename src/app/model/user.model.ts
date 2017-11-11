@@ -1,18 +1,10 @@
-export class User {
-  constructor(
-    username:    string,
-    displayname: string,
-    admin:       boolean,
-    active:      boolean,
-    identities: [
-      {
-        id:       number,
-        name:     string,
-        phoneid:  string,
-        interval: number
-      }
-    ]
-  ) {}
-}
+import {Identity} from './identity.model';
 
-module.exports = User;
+export interface User {
+    username:    string;
+    displayname: string;
+    password:    string;
+    admin:       boolean;
+    active:      boolean;
+    identities?:  Identity[];
+}

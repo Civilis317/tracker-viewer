@@ -4,13 +4,14 @@ import {Http, Headers, Response, RequestOptions, ResponseContentType} from '@ang
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
+import {Location} from '../model/location';
 
 @Injectable()
 export class LocationService {
 
   constructor(private http: Http) {}
   
-  list(): Promise<any> {
+  list(): Promise<Location[]> {
     const url: string = `${environment.tracker_url}/${environment.tracker_list_endpoint}`;
     
     return this.http.get(url)

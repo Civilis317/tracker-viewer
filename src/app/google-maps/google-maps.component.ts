@@ -4,6 +4,7 @@ import {ActivatedRoute, ParamMap} from '@angular/router';
 
 import {MapConfiguration} from '../model/map-config.model';
 import {Identity} from '../model/identity.model';
+import {Location} from '../model/location';
 import {LocationService} from '../services/location.service';
 import {IdentityService} from '../services/identity.service';
 
@@ -18,7 +19,7 @@ declare var google: any;
 export class GoogleMapsComponent implements OnInit {
   map: any;
   identity: Identity;
-  locationList: any;
+  locationList: Location[];
   pointer: number;
   datetime: Date;
   provider: string;
@@ -40,7 +41,7 @@ export class GoogleMapsComponent implements OnInit {
 
   public refreshLocationList() {
     this.pointer = 1;
-    this.locationService.list().then((data: any) => {
+    this.locationService.list().then((data: Location[]) => {
       // filter out phoneid
       this.locationList = data.filter(i => i.phoneid == this.identity.phoneid);
       console.log(this.locationList);
@@ -66,7 +67,7 @@ export class GoogleMapsComponent implements OnInit {
   
   private renderMap() {
     // get last location posted
-    const location = this.locationList[this.locationList.length - this.pointer];
+    const location: Location = this.locationList[this.locationList.length - this.pointer];
 
     this.googleApi.initMap().then(() => {
       const mapConfig: MapConfiguration = this.getMapConfig(location);
@@ -88,7 +89,7 @@ export class GoogleMapsComponent implements OnInit {
     });
   }
 
-  private getMapConfig(location: any): MapConfiguration {
+  private getMapConfig(location: Location): MapConfiguration {
     this.provider = location.provider;
     this.datetime = location.date;
     const mapConfig: MapConfiguration = {
