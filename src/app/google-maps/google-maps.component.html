@@ -2,12 +2,17 @@
 <div id="#divContainer">
 
 	<div class="portalDiv">
+     
+	<div *ngIf="alert.message.length > 0" class="alert alert-danger fade in">
+	  <strong>{{alert.error}}!&nbsp;</strong> {{alert.message}}
+	</div>
 
 		<p>
-		<span>
-			<span style="float: left;"> {{identity.name}}
-			&nbsp; {{datetime | date: 'HH:mm:ss dd-MM-yyyy'}}
-			&nbsp; {{provider}}
+		<span *ngIf="alert.message.length == 0">
+			<span style="float: left;"> {{identity.name}}:
+			&nbsp; <font color="blue">{{datetime | date: 'dd-MM-yyyy'}}</font>
+			<font color="red"> {{datetime | date: 'HH:mm'}}</font>
+			&nbsp; location provider: <font color="orange">{{provider}}</font>
 			 </span> 
 			<span style="float: right;">
 				<button type="button" title="previous location"
@@ -26,7 +31,10 @@
 		</span>
 		</p>
 
-		<div id="map"></div>
+		<div *ngIf="alert.message.length == 0" id="map"></div>
+		<br/>
 	</div>
+	
+	<br/>
 
 </div>

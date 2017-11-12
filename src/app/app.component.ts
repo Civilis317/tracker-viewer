@@ -2,9 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {environment} from '../environments/environment';
 import {Authentication} from './model/authentication';
 import {User} from './model/user.model';
-import { AuthenticationService } from './services/authentication.service';
+import {AuthenticationService} from './services/authentication.service';
 import {PubSubService} from './services/pubsub.service';
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -17,22 +17,26 @@ export class AppComponent implements OnInit {
   private menu: any;
   private authenticated: boolean;
   private user: User;
+  alert = {"class": "", "message": ""};
 
   constructor(
     private router: Router,
-    private pubSubService: PubSubService, 
+    private pubSubService: PubSubService,
     private authenticationService: AuthenticationService
   ) {}
 
   ngOnInit(): void {
     this.checkAuthentication();
-
-    console.log("onInit " + this.authenticated + " " + this.user);
-
-
     this.pubSubService.Authentication.subscribe(
       (authentication: Authentication) => {
         this.authenticated = authentication.authenticated;
+        if (this.authenticated) {
+          this.alert.class = "alert alert-success alert-dismissable fade in";
+          this.alert.message = "you are logged in!";
+          setTimeout(() => {
+            this.closeAlert();
+          }, 2500);
+        }
         this.user = authentication.user;
         localStorage.setItem(environment.AUTHENTICATION, JSON.stringify(authentication));
         this.assembleMenu();
@@ -73,7 +77,7 @@ export class AppComponent implements OnInit {
     }
     this.assembleMenu();
   }
-  
+
   logout(): void {
     console.log('logging off');
     this.authenticationService.logout()
@@ -81,15 +85,24 @@ export class AppComponent implements OnInit {
         // user object minus pwd is returned, put on pub-sub svc for app.component to process
         if (!authentication.authenticated) {
           localStorage.removeItem(environment.AUTHENTICATION);
+          this.alert.class = "alert alert-info alert-dismissable fade in";
+          this.alert.message = "you are logged off...";
+          setTimeout(() => {
+            this.closeAlert();
+          }, 2500);
           this.checkAuthentication();
         }
-        this.router.navigate(['/']);
-      }).catch ( error => {
+        // this.router.navigate(['/']);
+      }).catch(error => {
         // do something...
         // logout anyway? but the jwt cookie will still be there...
         localStorage.removeItem(environment.AUTHENTICATION);
         this.checkAuthentication();
       });
+  }
+
+  closeAlert() {
+    this.alert.message = '';
   }
 
 }

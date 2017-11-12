@@ -1,6 +1,7 @@
 
-<div style="width: 80%; margin-left: 5%;">
-<h3>{{title}}</h3>
+<div style="width: 80%; margin-left: 5%; background-color: #f0f0f0; margin-top: 3%; border-radius: 25px; overflow: auto; ">
+
+<h3>&nbsp;&nbsp;&nbsp;{{title}}</h3>
 
  <nav class="navbar navbar-default">
   <div class="container-fluid">
@@ -9,7 +10,7 @@
     </div>
     <ul class="nav navbar-nav">
 		<li class="dropdown">
-			<a class="dropdown-toggle" data-toggle="dropdown" href="#">Personen
+			<a class="dropdown-toggle" data-toggle="dropdown" href="#">Targets
 	        <span class="caret"></span></a>
 	        <ul class="dropdown-menu">
 				<li *ngFor="let menuItem of menu.menuItemList; let i = index">
@@ -34,6 +35,12 @@
   </div>
 </nav> 
 
+<div *ngIf="alert.message.length > 0" class="{{alert.class}}" style="width: 90%; margin-left: 5%;">
+  <a href="#" class="close"  (click)="closeAlert()" aria-label="close">&times;</a>
+  <strong>Information: </strong> {{alert.message}}
+</div>
+
 <router-outlet></router-outlet>
 
+<div style="height: 100px;"></div>
 </div>

@@ -6,7 +6,8 @@ import {MapConfiguration} from '../model/map-config.model';
 import {Identity} from '../model/identity.model';
 import {Location} from '../model/location';
 import {LocationService} from '../services/location.service';
-import {IdentityService} from '../services/identity.service';
+import {environment} from '../../environments/environment';
+import { Authentication } from '../model/authentication';
 
 
 declare var google: any;
@@ -23,44 +24,54 @@ export class GoogleMapsComponent implements OnInit {
   pointer: number;
   datetime: Date;
   provider: string;
+  alert = {"error": "", "message": ""};
   
 
   constructor(
     private googleApi: GoogleApiService,
     private route: ActivatedRoute,
     private locationService: LocationService,
-    private identityService: IdentityService
   ) {}
 
   ngOnInit() {
     this.route.params.subscribe((param: any) => {
-      this.identity = this.identityService.getIdentity(param.id);
+      const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
+      this.identity = authentication.user.identities.find(i => i.id == param.id);
       this.refreshLocationList();
     });
   }
 
   public refreshLocationList() {
-    this.pointer = 1;
-    this.locationService.list().then((data: Location[]) => {
+    this.locationService.list(this.identity.phoneid).then((data: Location[]) => {
       // filter out phoneid
-      this.locationList = data.filter(i => i.phoneid == this.identity.phoneid);
+      this.locationList = data;
       console.log(this.locationList);
+      /*
+      this.locationList.sort((a: Location, b: Location) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
+      */
+      this.pointer = this.locationList.length;
       this.renderMap();
+    }).catch((error) => {
+      this.alert.error = 'Error';
+      this.alert.message = "Unable to retrieve and/or display location data...";
     });
+      
   }
 
-  public previousLocation() {
+  public nextLocation() {
     this.pointer++;
-    if (this.pointer > this.locationList.length - 1 ) {
-      this.pointer = this.locationList.length - 1;
+    if (this.pointer > this.locationList.length ) {
+      this.pointer = this.locationList.length;
     }
     this.renderMap();
   }
 
-  public nextLocation() {
+  public previousLocation() {
     this.pointer--;
-    if (this.pointer < 0) {
-      this.pointer = 0;
+    if (this.pointer < 1) {
+      this.pointer = 1;
     }
     this.renderMap();
   }
@@ -68,6 +79,7 @@ export class GoogleMapsComponent implements OnInit {
   private renderMap() {
     // get last location posted
     const location: Location = this.locationList[this.locationList.length - this.pointer];
+    console.log(`pointer: ${this.pointer}: date: ${location.date}`);
 
     this.googleApi.initMap().then(() => {
       const mapConfig: MapConfiguration = this.getMapConfig(location);

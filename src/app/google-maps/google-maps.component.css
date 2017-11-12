@@ -1,6 +1,5 @@
 #divContainer {
 	background: white;
-	width: 1000px;
 	float: left;
 }
 
@@ -11,13 +10,16 @@
 }
 
 .portalDiv {
-	background: white;
+	background: #f0f0f0;
 	float: left;
-	width: 100%;
+	width: 96%;
+	margin-left: 2%;
 }
 
 #map {
 	height: 450px;
 	width: 100%;
+	border-radius: 25px;
 	border: 1px solid grey;
+	
 }

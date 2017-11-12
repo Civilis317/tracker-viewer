@@ -11,8 +11,8 @@ export class LocationService {
 
   constructor(private http: Http) {}
   
-  list(): Promise<Location[]> {
-    const url: string = `${environment.tracker_url}/${environment.tracker_list_endpoint}`;
+  list(phoneid: string): Promise<Location[]> {
+    const url: string = `${environment.tracker_url}/${environment.tracker_list_endpoint}?phoneid=${phoneid}`;
     
     return this.http.get(url, {withCredentials: true})
       .toPromise()
