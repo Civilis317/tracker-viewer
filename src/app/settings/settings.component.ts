@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {PubSubService} from '../services/pubsub.service';
-import { Authentication } from '../model/authentication';
-import { User } from '../model/user.model';
+import {Authentication} from '../model/authentication';
+import {User} from '../model/user.model';
 import {Identity} from "../model/identity.model";
-import { environment } from '../../environments/environment';
+import {environment} from '../../environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -16,7 +16,8 @@ export class SettingsComponent implements OnInit {
   private tmpUser: User;
   private model: string;
 
-  constructor(private router: Router, private pubSubService: PubSubService) { }
+  constructor(private router: Router, private pubSubService: PubSubService) {
+  }
 
   ngOnInit() {
     const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
@@ -26,13 +27,14 @@ export class SettingsComponent implements OnInit {
   }
 
   private copyUser() {
-    this.tmpUser = {username: this.user.username,
-                    displayname: this.user.displayname,
-                    password: null,
-                    active: this.user.active,
-                    admin: this.user.active,
-                    identities: []
-                  };
+    this.tmpUser = {
+      username: this.user.username,
+      displayname: this.user.displayname,
+      password: null,
+      active: this.user.active,
+      admin: this.user.active,
+      identities: []
+    };
 
     this.user.identities.forEach(identity => {
       let i: Identity = {
@@ -52,7 +54,7 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  addIdentity(){
+  addIdentity() {
     let id: number = 0;
     this.tmpUser.identities.forEach(item => {
       if (item.id > id) {
@@ -85,8 +87,8 @@ export class SettingsComponent implements OnInit {
   }
 
   private copyIdentity(identity: Identity) {
-    let userIdentity: Identity = this.user.identities.find(i => i.id ===identity.id);
-    if (userIdentity){
+    let userIdentity: Identity = this.user.identities.find(i => i.id === identity.id);
+    if (userIdentity) {
       // update
       userIdentity.id = identity.id;
       userIdentity.name = identity.name;
