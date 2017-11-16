@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
             this.closeAlert();
           }, 2500);
         }
+        console.log(authentication.user.displayname);
         this.user = authentication.user;
         localStorage.setItem(environment.AUTHENTICATION, JSON.stringify(authentication));
         this.assembleMenu();

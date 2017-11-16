@@ -1,8 +1,10 @@
-import { environment } from '../../environments/environment';
+import { Component, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
+import {PubSubService} from '../services/pubsub.service';
 import { Authentication } from '../model/authentication';
 import { User } from '../model/user.model';
-import { Component, OnInit } from '@angular/core';
 import {Identity} from "../model/identity.model";
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -14,7 +16,7 @@ export class SettingsComponent implements OnInit {
   private tmpUser: User;
   private model: string;
 
-  constructor() { }
+  constructor(private router: Router, private pubSubService: PubSubService) { }
 
   ngOnInit() {
     const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
@@ -41,14 +43,69 @@ export class SettingsComponent implements OnInit {
       };
       this.tmpUser.identities.push(i);
     })
-
-    this.tmpUser.displayname = 'test';
-    console.log(`tmpUser displayname: ${this.tmpUser.displayname}`)
-    console.log(`user displayname: ${this.user.displayname}`)
   }
 
-  onRowClick(event){
-    console.log(event.target.textContent);
+  removeIdentity(identity: Identity) {
+    const index = this.tmpUser.identities.indexOf(identity, 0);
+    if (index > -1) {
+      this.tmpUser.identities.splice(index, 1);
+    }
+  }
+
+  addIdentity(){
+    let id: number = 0;
+    this.tmpUser.identities.forEach(item => {
+      if (item.id > id) {
+        id = item.id;
+      }
+    });
+    id++;
+
+    let identity: Identity = {
+      id: id,
+      name: null,
+      phoneid: null,
+      interval: 3600
+    }
+
+    this.tmpUser.identities.push(identity);
+  }
+
+  saveSettings() {
+    this.user.displayname = this.tmpUser.displayname;
+    this.tmpUser.identities.forEach(item => this.copyIdentity(item));
+    // TODO: call service to update mongodb, use returned userobject to notify appcomponent
+    // for now notify appcomponent
+    const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
+    authentication.user = this.user;
+    console.log(`user.displayname: ${this.user.displayname}`)
+    console.log(`authentication.user.displayname: ${authentication.user.displayname}`)
+    this.pubSubService.Authentication.next(authentication);
+    this.router.navigate(['/']);
+  }
+
+  private copyIdentity(identity: Identity) {
+    let userIdentity: Identity = this.user.identities.find(i => i.id ===identity.id);
+    if (userIdentity){
+      // update
+      userIdentity.id = identity.id;
+      userIdentity.name = identity.name;
+      userIdentity.phoneid = identity.phoneid;
+      userIdentity.interval = identity.interval;
+    } else {
+      // new identity
+      userIdentity = {
+        id: identity.id,
+        name: identity.name,
+        phoneid: identity.phoneid,
+        interval: identity.interval
+      }
+      this.user.identities.push(userIdentity);
+    }
+  }
+
+  cancelChanges() {
+    this.copyUser();
   }
 
 }
