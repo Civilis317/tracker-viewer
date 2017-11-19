@@ -30,7 +30,7 @@ input[type="text"]:read-only {
 
 tbody {
   display: block;
-  height: 150px;
+  height: 120px;
   overflow-y: scroll;
 }
 
@@ -47,4 +47,6 @@ thead {
 table {
   width: 95%;
 }
+
+
 

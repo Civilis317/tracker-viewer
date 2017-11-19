@@ -1,91 +1,95 @@
-<div style="width: 80%; margin-left: 10%;">
+<div class="container" style="width: 100%;">
 
-  <form class="form-horizontal">
+  <div class="col-xs-10">
 
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="username">Username</label>
-      <div class="col-sm-4">
-      <input readonly="readonly" value="{{tmpUser.username}}" type="text" name="username" id="username" readonly="true"
-             class="form-control input-sm"/>
+    <div class="row">
+      <label class="control-label col-xs-3" style="text-align: left; padding-top: 5px;">Username</label>
+      <div class="col-xs-4">
+        <input readonly="readonly" value="{{tmpUser.username}}" type="text" name="username" id="username" readonly="true"
+               class="form-control input-sm"/>
       </div>
-      <div class="col-sm-4">
-        <div class="col-sm-2">&nbsp;</div>
-        <div class="checkbox">
-        <label><input type="checkbox" disabled="true" name="remember" checked="{{tmpUser.active}}"> Active</label>
-      </div>
+
+      <div class="col-xs-2">
+        <div class="checkbox" style="float: right;">
+          <label><input type="checkbox" disabled="true" name="remember" checked="{{tmpUser.active}}"> Active</label>
+        </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="control-label col-sm-2" for="displayName">Display-name</label>
-      <div class="col-sm-4">
-      <input [(ngModel)]="tmpUser.displayname" type="text" name="displayName" id="displayName" class="form-control input-sm" required autofocus/>
+    <div class="row">
+      <label class="control-label col-xs-3" style="text-align: left; padding-top: 5px;">Display name</label>
+      <div class="col-xs-4">
+        <input [(ngModel)]="tmpUser.displayname" type="text" name="displayName" id="displayName" class="form-control input-sm" required autofocus/>
       </div>
-      <div class="col-sm-4">
-        <div class="col-sm-2">&nbsp;</div>
-        <div class="checkbox">
+
+      <div class="col-xs-2">
+        <div class="checkbox" style="float: right;">
           <label><input type="checkbox" disabled="true" name="remember" checked="{{tmpUser.admin}}"> Admin</label>
         </div>
       </div>
     </div>
 
-    <div class="form-group">
-      <label class="control-label col-sm-2" >Identities</label>
-      <div class="col-sm-10">
+    <div class="row">
+      <label class="control-label col-xs-3" style="text-align: left; padding-top: 5px;">Identities</label>
       <button type="button" title="add identity" (click)="addIdentity()"
               class="btn btn btn-md">
-        <span class="glyphicon glyphicon-plus-sign"></span>
+        <span class="glyphicon glyphicon-plus-sign" style="color: blue;"></span>
       </button>
-      <table class="table table-striped table-bordered">
-        <thead>
-        <tr>
-          <th width="10%;">Id</th>
-          <th width="50&">Name</th>
-          <th width="25%">PhoneId</th>
-          <th width="10%">Interval</th>
-          <th width="5%;">&nbsp;</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let identity of tmpUser.identities; let i = index">
-          <td width="10%;"><span class="content-editable" contenteditable='true' [textContent]="identity.id"
-                    (blur)="identity.id=$event.target.textContent">{{identity.id}}</span></td>
-          <td width="50%;"><span class="content-editable" contenteditable='true' [textContent]="identity.name"
-                    (blur)="identity.name=$event.target.textContent">{{identity.name}}</span></td>
-          <td width="25%;"><span class="content-editable" contenteditable='true' [textContent]="identity.phoneid"
-                    (blur)="identity.phoneid=$event.target.textContent">{{identity.phoneid}}</span></td>
-          <td width="10%;"><span class="content-editable" contenteditable='true' [textContent]="identity.interval"
-                    (blur)="identity.interval=$event.target.textContent">{{identity.interval}}</span></td>
-          <td width="5%;"><button type="button" title="remove identity" (click)="removeIdentity(identity)"
-                      class="btn btn btn-xs">
-            <span class="glyphicon glyphicon-trash"></span>
-          </button></td>
-        </tr>
-        </tbody>
-      </table>
-      </div>
-
-
     </div>
 
-    <div class="form-group">
-
-      <div class="col-sm-2">
-        <button type="button" style="height: 25px; float: right;" title="Reset changes" (click)="cancelChanges()">
-          <span class="glyphicon glyphicon-floppy-remove"><span style="font-family: Arial; font-weight: bold;"> Cancel</span></span>
-        </button>
-
-      </div>
-
-      <div class="col-sm-2">
-        <button type="button" style="height: 25px;" title="Save changes" (click)="saveSettings()">
-          <span class="glyphicon glyphicon-floppy-disk"><span style="font-family: Arial; font-weight: bold;"> Save</span></span>
-        </button>
+    <div class="row">
+      <div class="col-sm-12">
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th width="10%;"><span>&nbsp;&nbsp;Id</span></th>
+            <th width="45%">&nbsp;&nbsp;Name</th>
+            <th width="25%">&nbsp;&nbsp;PhoneId</th>
+            <th width="15%">&nbsp;&nbsp;Interval</th>
+            <th width="5%;">&nbsp;</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let identity of tmpUser.identities; let i = index">
+            <td width="10%;"><span class="content-editable" contenteditable='true' [textContent]="identity.id"
+                                   (blur)="identity.id=$event.target.textContent">{{identity.id}}</span></td>
+            <td width="45%;"><span class="content-editable" contenteditable='true' [textContent]="identity.name"
+                                   (blur)="identity.name=$event.target.textContent">{{identity.name}}</span></td>
+            <td width="25%;"><span class="content-editable" contenteditable='true' [textContent]="identity.phoneid"
+                                   (blur)="identity.phoneid=$event.target.textContent">{{identity.phoneid}}</span></td>
+            <td width="15%;"><span class="content-editable" contenteditable='true' [textContent]="identity.interval"
+                                   (blur)="identity.interval=$event.target.textContent">{{identity.interval}}</span></td>
+            <td width="5%;"><button type="button" title="remove {{identity.name}}" (click)="removeIdentity(identity)"
+                                    class="btn btn-link btn-xs">
+              <span class="glyphicon glyphicon-trash" style="color: crimson;"></span>
+            </button></td>
+          </tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
 
-  </form>
+  </div>
+
+
+  <div class="col-xs-1">
+    <div class="row">
+      <button type="button" title="Save changes" (click)="saveSettings()"
+              class="btn btn btn-lg" >
+        <span class="glyphicon glyphicon-floppy-disk" style="color: darkgreen"></span>
+      </button>
+    </div>
+
+    <div class="row">
+      <button type="button" title="Reset all changes" (click)="cancelChanges()"
+              class="btn btn btn-lg">
+        <span class="glyphicon glyphicon-floppy-remove" style="color: crimson"></span>
+      </button>
+    </div>
+  </div>
+
+
 
 </div>
 

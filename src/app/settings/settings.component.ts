@@ -76,12 +76,11 @@ export class SettingsComponent implements OnInit {
   saveSettings() {
     this.user.displayname = this.tmpUser.displayname;
     this.tmpUser.identities.forEach(item => this.copyIdentity(item));
+    // TODO: remove identities from user that don't exist anymore in tmpUser
     // TODO: call service to update mongodb, use returned userobject to notify appcomponent
     // for now notify appcomponent
     const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
     authentication.user = this.user;
-    console.log(`user.displayname: ${this.user.displayname}`)
-    console.log(`authentication.user.displayname: ${authentication.user.displayname}`)
     this.pubSubService.Authentication.next(authentication);
     this.router.navigate(['/']);
   }
