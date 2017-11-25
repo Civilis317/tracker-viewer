@@ -8,7 +8,7 @@ import {Location} from '../model/location';
 import {LocationService} from '../services/location.service';
 import {environment} from '../../environments/environment';
 import { Authentication } from '../model/authentication';
-
+import {StorageService} from "../services/storage.service";
 
 declare var google: any;
 
@@ -25,17 +25,18 @@ export class GoogleMapsComponent implements OnInit {
   datetime: Date;
   provider: string;
   alert = {"error": "", "message": ""};
-  
+
 
   constructor(
     private googleApi: GoogleApiService,
     private route: ActivatedRoute,
+    private storageService: StorageService,
     private locationService: LocationService,
   ) {}
 
   ngOnInit() {
     this.route.params.subscribe((param: any) => {
-      const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
+      const authentication: Authentication = this.storageService.getAuthentication();
       this.identity = authentication.user.identities.find(i => i.id == param.id);
       this.refreshLocationList();
     });
@@ -57,7 +58,7 @@ export class GoogleMapsComponent implements OnInit {
       this.alert.error = 'Error';
       this.alert.message = "Unable to retrieve and/or display location data...";
     });
-      
+
   }
 
   public nextLocation() {
@@ -75,7 +76,7 @@ export class GoogleMapsComponent implements OnInit {
     }
     this.renderMap();
   }
-  
+
   private renderMap() {
     // get last location posted
     const location: Location = this.locationList[this.locationList.length - this.pointer];

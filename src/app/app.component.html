@@ -25,18 +25,18 @@
 		<a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> {{user.displayname}}
 	       <span class="caret"></span></a>
 	       <ul class="dropdown-menu">
-			<li> 
-				<a routerLink="/" (click)="logout()" title="End your session"><span class="glyphicon glyphicon-log-out"></span> Log off</a>
-			</li>
-			<li> 
-				<a routerLink="/settings" title="administration"><span class="glyphicon glyphicon-wrench"></span> Settings</a>
-			</li>
+            <li>
+              <a routerLink="/" (click)="logout()" title="End your session"><span class="glyphicon glyphicon-log-out"></span> Log off</a>
+            </li>
+            <li>
+              <a routerLink="/settings" title="administration"><span class="glyphicon glyphicon-wrench"></span> Settings</a>
+            </li>
 	       </ul>
-	  </li>      
-      
+	  </li>
+
     </ul>
   </div>
-</nav> 
+</nav>
 
 <div *ngIf="alert.message.length > 0" class="{{alert.class}}" style="width: 90%; margin-left: 5%;">
   <a href="#" class="close"  (click)="closeAlert()" aria-label="close">&times;</a>

@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {Http, Headers, Response, RequestOptions} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import {Headers, Http, RequestOptions} from '@angular/http';
 import 'rxjs/Rx';
 import 'rxjs/add/operator/toPromise';
 import {environment} from '../../environments/environment';
 import {Authentication} from '../model/authentication';
+import {User} from "../model/user.model";
 
 
 @Injectable()
@@ -31,6 +31,22 @@ export class AuthenticationService {
     const url: string = `${environment.tracker_url}/${environment.tracker_logout_endpoint}`;
 
     return this.http.get(url, {withCredentials: true})
+      .toPromise()
+      .then(response => response.json())
+      .catch(this.handleError);
+  }
+
+  saveSettings(user: User): Promise<User> {
+    console.log(`user:  ${JSON.stringify(user)}` )
+    const url: string = `${environment.tracker_url}/${environment.tracker_save_settings_endpoint}`;
+    const userData = JSON.stringify(user);
+    const options = new RequestOptions({
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }), withCredentials: true
+    });
+
+    return this.http.post(url, userData, options)
       .toPromise()
       .then(response => response.json())
       .catch(this.handleError);

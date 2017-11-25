@@ -5,6 +5,8 @@ import {Authentication} from '../model/authentication';
 import {User} from '../model/user.model';
 import {Identity} from "../model/identity.model";
 import {environment} from '../../environments/environment';
+import {AuthenticationService} from "../services/authentication.service";
+import {StorageService} from "../services/storage.service";
 
 @Component({
   selector: 'app-settings',
@@ -14,16 +16,22 @@ import {environment} from '../../environments/environment';
 export class SettingsComponent implements OnInit {
   private user: User;
   private tmpUser: User;
-  private model: string;
 
-  constructor(private router: Router, private pubSubService: PubSubService) {
+  constructor(private router: Router,
+              private storageService: StorageService,
+              private pubSubService: PubSubService,
+              private settingsService: AuthenticationService) {
   }
 
   ngOnInit() {
-    const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
-    this.user = authentication.user;
-    this.model = 'test';
-    this.copyUser();
+    const authentication: Authentication = this.storageService.getAuthentication();
+    if (authentication && authentication.authenticated) {
+      this.user = authentication.user;
+      this.copyUser();
+    } else {
+      console.log('not auth')
+      // TODO: handle situation where auth not found
+    }
   }
 
   private copyUser() {
@@ -76,13 +84,18 @@ export class SettingsComponent implements OnInit {
   saveSettings() {
     this.user.displayname = this.tmpUser.displayname;
     this.tmpUser.identities.forEach(item => this.copyIdentity(item));
-    // TODO: remove identities from user that don't exist anymore in tmpUser
-    // TODO: call service to update mongodb, use returned userobject to notify appcomponent
-    // for now notify appcomponent
-    const authentication: Authentication = JSON.parse(localStorage.getItem(environment.AUTHENTICATION));
-    authentication.user = this.user;
-    this.pubSubService.Authentication.next(authentication);
-    this.router.navigate(['/']);
+    console.log(`user pwd: ${this.user}`);
+    // TODO: remove identities from user that don't exist anymore in tmpUser = bug
+    this.settingsService.saveSettings(this.user).then((newUser: User) => {
+      // for now notify appcomponent
+      const authentication: Authentication = this.storageService.getAuthentication();
+      authentication.user = newUser;
+      this.pubSubService.User.next(newUser);
+      this.router.navigate(['/']);
+
+    }).catch(error => {
+      // TODO: handle failure to save settings, eg show alerts
+    })
   }
 
   private copyIdentity(identity: Identity) {

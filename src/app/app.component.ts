@@ -5,6 +5,7 @@ import {User} from './model/user.model';
 import {AuthenticationService} from './services/authentication.service';
 import {PubSubService} from './services/pubsub.service';
 import {Router} from '@angular/router';
+import {StorageService} from "./services/storage.service";
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import {Router} from '@angular/router';
 })
 
 export class AppComponent implements OnInit {
+  static SUCCESS_MSG = 'alert alert-success alert-dismissable fade in';
   private title = 'Tracker Viewer';
   private menu: any;
   private authenticated: boolean;
@@ -21,6 +23,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private router: Router,
+    private storageService: StorageService,
     private pubSubService: PubSubService,
     private authenticationService: AuthenticationService
   ) {}
@@ -29,27 +32,47 @@ export class AppComponent implements OnInit {
     this.checkAuthentication();
     this.pubSubService.Authentication.subscribe(
       (authentication: Authentication) => {
-        this.authenticated = authentication.authenticated;
-        if (this.authenticated) {
-          this.alert.class = "alert alert-success alert-dismissable fade in";
-          this.alert.message = "you are logged in!";
-          setTimeout(() => {
-            this.closeAlert();
-          }, 2500);
-        }
-        console.log(authentication.user.displayname);
-        this.user = authentication.user;
-        localStorage.setItem(environment.AUTHENTICATION, JSON.stringify(authentication));
-        this.assembleMenu();
+        this.handleAuthenticatedMsg(authentication);
       },
       (err) => console.error('error in AuthPubSubService'),
       () => console.log('Complete')
     );
 
+    this.pubSubService.User.subscribe((user: User) => {
+      this.handleSettingsSaved(user);
+    })
+  }
+
+  private handleSettingsSaved(user: User): void {
+    let authentication: Authentication = this.storageService.getAuthentication();
+    authentication.user = user;
+    this.storageService.saveAuthentication(authentication);
+    this.setAlert(AppComponent.SUCCESS_MSG, 'Settings saved...')
+  }
+
+  private handleAuthenticatedMsg(auth: Authentication): void {
+    this.authenticated = auth.authenticated;
+    if (this.authenticated) {
+      this.user = auth.user;
+      this.storageService.saveAuthentication(auth);
+      this.setAlert(AppComponent.SUCCESS_MSG, 'Login successful!');
+    } else {
+      this.user = null;
+      this.storageService.saveAuthentication(null);
+    }
+    this.assembleMenu();
+  }
+
+  private setAlert(clazz: string, msg: string): void {
+    this.alert.class = clazz;
+    this.alert.message = msg;
+    setTimeout(() => {
+      this.closeAlert();
+    }, 2500);
   }
 
   private assembleMenu(): void {
-    let menuString: string = '{"menuItemList": [';
+    let menuString: string = '{"menuItemList": [ ';
     if (this.user && this.authenticated) {
       this.user.identities.forEach(element => {
         const menuItem: string = '{"url": "/map/' + element.id + '", "name": "' + element.name + '"},';
@@ -57,22 +80,25 @@ export class AppComponent implements OnInit {
       });
       // remove last ',' to be able to call JSON.parse on the resultant string
       menuString = menuString.substring(0, menuString.length - 1);
-      menuString += '], "displayName": "kkk"}';
+      menuString += ']}';
 
     } else {
-      menuString += '], "displayName": "Not logged in"}';
+      menuString += ']}';
     }
+
+    console.log(menuString);
 
     this.menu = JSON.parse(menuString);
   }
 
   private checkAuthentication(): void {
-    const auth_string = localStorage.getItem(environment.AUTHENTICATION);
-    if (auth_string) {
-      const authentication: Authentication = JSON.parse(auth_string);
+    let authentication: Authentication = this.storageService.getAuthentication();
+    if (authentication) {
+      console.log('we have authentication');
       this.authenticated = authentication.authenticated;
       this.user = authentication.user;
     } else {
+      console.log('no authentication');
       this.authenticated = false;
       this.user = null;
     }
@@ -83,21 +109,11 @@ export class AppComponent implements OnInit {
     console.log('logging off');
     this.authenticationService.logout()
       .then((authentication: Authentication) => {
-        // user object minus pwd is returned, put on pub-sub svc for app.component to process
-        if (!authentication.authenticated) {
-          localStorage.removeItem(environment.AUTHENTICATION);
-          this.alert.class = "alert alert-info alert-dismissable fade in";
-          this.alert.message = "you are logged off...";
-          setTimeout(() => {
-            this.closeAlert();
-          }, 2500);
-          this.checkAuthentication();
-        }
-        // this.router.navigate(['/']);
+        this.handleAuthenticatedMsg(authentication);
       }).catch(error => {
         // do something...
         // logout anyway? but the jwt cookie will still be there...
-        localStorage.removeItem(environment.AUTHENTICATION);
+        this.storageService.removeAuthentication();
         this.checkAuthentication();
       });
   }

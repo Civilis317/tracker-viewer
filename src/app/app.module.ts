@@ -14,6 +14,7 @@ import { AuthenticationService } from './services/authentication.service';
 import { LocationService } from './services/location.service';
 import { PubSubService } from './services/pubsub.service';
 import { SettingsComponent } from './settings/settings.component';
+import {StorageService} from "./services/storage.service";
 
 @NgModule({
   declarations: [
@@ -28,7 +29,7 @@ import { SettingsComponent } from './settings/settings.component';
     AppRoutingModule,
     HttpModule
   ],
-  providers: [GoogleApiService, LocationService, AuthenticationService, PubSubService],
+  providers: [GoogleApiService, LocationService, AuthenticationService, PubSubService, StorageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
