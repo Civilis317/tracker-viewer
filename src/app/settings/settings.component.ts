@@ -4,7 +4,6 @@ import {PubSubService} from '../services/pubsub.service';
 import {Authentication} from '../model/authentication';
 import {User} from '../model/user.model';
 import {Identity} from "../model/identity.model";
-import {environment} from '../../environments/environment';
 import {AuthenticationService} from "../services/authentication.service";
 import {StorageService} from "../services/storage.service";
 
